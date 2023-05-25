@@ -1,0 +1,247 @@
+# Build MOM6 on mox Hyak HPC at UW
+This Document was created by Vivek Seelanki
+
+# PREPARATION OF NECESSARY MODULES 
+
+>>Fortran compiler
+     Intel Fortran (ifort) on HPC
+
+>>MPI library
+     Open MPI (usually faster)
+
+>>netCDF for I/O
+
+## For loading these compiler on mox hyak HPC
+
+$ module load netcdf_fortran+c_4.4.1.1-icc_17           # netcdf 
+
+$ module load icc_17-impi_2017                          # intel Fortran and MPI
+
+** Note: Add these modules in your ~/.bashrc file
+
+## Before downloading source code on mox hpc need to login on intractive build node.
+
+$ srun -p build --time=4:00:00 --mem=100G --pty /bin/bash
+
+## Then download wherever you want on your mox hpc account. In my case
+
+$ cd /gscratch/bumblereem/viveklp
+
+!!! ================================================================================
+
+
+###  GET THE CODE ####
+
+$ git clone https://github.com/NOAA-GFDL/MOM6-examples.git --recursive
+        (or)
+$ git clone --recursive https://github.com/NOAA-GFDL/MOM6-examples.git MOM6-examples
+
+## Verify submodules:
+
+$ cd MOM6-examples
+$ git submodule update --init --recursive
+
+!!! ================================================================================
+
+###GFDL TOOLS
+>>list_paths
+  Generates a list of files to be compiled (usually in path_names)
+
+>>mkmf
+  Generates a Makefile from path_names and a platform template (e.g. linux-gnu.mk)
+  
+  
+#### Compiling the FMS shared code
+
+### FMS SETUP
+## FMS is GFDL's climate model framework
+
+>>> Create the path_names manifest:
+
+$ mkdir -p build/fms
+$ cd build/fms
+$ ../../src/mkmf/bin/list_paths -l ../../src/FMS
+
+## Sample output:
+../../src/FMS/horiz_interp/horiz_interp_bilinear.F90
+../../src/FMS/horiz_interp/horiz_interp_type.F90
+../../src/FMS/horiz_interp/horiz_interp_bicubic.F90
+../../src/FMS/horiz_interp/horiz_interp.F90
+(...)
+
+### BUILD FMS
+## Generate the Makefile:
+
+$ ../../src/mkmf/bin/mkmf \
+   -t ../../src/mkmf/templates/nccs-intel.mk \
+   -p libfms.a \
+   -c "-Duse_libMPI -Duse_netCDF" \
+   path_names
+
+%%% Note: In mox hyak hpc " nccs-intel.mk " platform template is perfect for ifort
+
+## and build:
+
+$ make NETCDF=3 REPRO=1 libfms.a -j
+
+!!! ================================================================================
+
+
+## MOM6 SETUP ##
+## Compiling MOM6 in ocean-only mode (without SIS2)
+
+$ mkdir -p build/ocean_only
+
+$ cd build/ocean_only
+
+## MANIFEST
+
+$ ../../src/mkmf/bin/list_paths -l \
+    ../../src/MOM6/config_src/infra/FMS1/ \
+    ../../src/MOM6/config_src/memory/dynamic_symmetric/ \
+    ../../src/MOM6/config_src/drivers/solo_driver/ \
+    ../../src/MOM6/config_src/external/ \
+    ../../src/MOM6/src/*/ \
+    ../../src/MOM6/src/*/*/
+
+## BUILD MOM6
+## CREATE MAKEFILE
+
+$ ../../src/mkmf/bin/mkmf \
+   -t ../../src/mkmf/templates/nccs_intel.mk \
+   -o '-I../fms' \
+   -p MOM6 \
+   -l '-L../fms -lfms' \
+   path_names
+
+### Finally, compile the MOM6 ocean-only model with:
+
+$ make NETCDF=3 REPRO=1 MOM6 -j
+
+
+### To run the test_case
+##  Test the executable:
+
+$ cd ../../ocean_only/double_gyre
+$ mkdir RESTART
+
+## Run double_gyre test_case
+
+$ ../../build/ocean_only/MOM6
+
+
+!!! ================================================================================
+
+
+## Compiling MOM6 in MOM6-SIS2 coupled mode
+
+$ cd /gscratch/bumblereem/viveklp/MOM6-examples
+
+$ mkdir -p build/ice_ocean_SIS2/
+
+## MANIFEST
+
+$ cd build/ice_ocean_SIS2/; rm -f path_names; \
+
+$ ../../src/mkmf/bin/list_paths -l \
+     ../../src/MOM6/config_src/infra/FMS1/ \
+     ../../src/MOM6/config_src/memory/dynamic_symmetric/ \
+     ../../src/MOM6/config_src/drivers/FMS_cap/ \
+     ../../src/MOM6/config_src/external/ \
+     ../../src/SIS2/config_src/dynamic_symmetric/ \
+     ../../src/MOM6/src/*/ \
+     ../../src/MOM6/src/*/*/ \
+     ../../src/atmos_null/ \
+     ../../src/coupler/ \
+     ../../src/land_null/ \
+     ../../src/ice_param/ \
+     ../../src/icebergs/ \
+     ../../src/SIS2/ \
+     ../../src/FMS/coupler/ \
+     ../../src/FMS/include/
+
+##  BUILD MOM6
+### CREATE MAKEFILE
+
+$ cd build/ice_ocean_SIS2/; \
+
+../../src/mkmf/bin/mkmf \
+    -t ../../src/mkmf/templates/nccs-intel.mk \
+    -o '-I../fms' \
+    -p MOM6 \
+    -l '-L../fms -lfms' \
+    -c '-Duse_AM3_physics \
+    -D_USE_LEGACY_LAND_' \
+     path_names
+
+## Finally, compile the MOM6 OCEAN-SIS2 coupled model with:
+
+$ make NETCDF=3 REPRO=1 MOM6 -j
+ 
+
+### To run the test_case in ocean-sis2 coupled mode
+##  Test the executable:
+
+$ cd ../../ice_ocean_SIS2/OM4_05
+$ mkdir RESTART
+
+## Run double_gyre test_case
+
+$ ../../build/ice_ocean_SIS2/MOM6
+
+!!! ================================================================================
+
+### To run the ice_ocean_sis2 test_case need to downloaded the input datasets from below link, it is very diffcult to download those datasets, due to no support from GFDL sever.
+
+>> You can construct your own datasets directory that the link .datasets points to by downloading and unpacking each of the tar files at ftp://ftp.gfdl.noaa.gov/perm/Alistair.Adcroft/MOM6-testing/ into your own central location and linking .datasets to that location.
+
+>> Note that not all tar files are needed at once but some tests might use data from more than one file. We try to reuse data between tests and the directory names within the datasets location are not necessarily those of the tests in MOM6-examples.
+
+$ cd  /gscratch/bumblereem/viveklp/
+$ mkdir -p datasets
+$ cd datasets
+$ wget ftp://ftp.gfdl.noaa.gov/perm/Alistair.Adcroft/MOM6-testing
+$ ls
+
+AM2_LM3_MOM6i_1deg        CM2G63L      GOLD_SIS_025      MESO_025_63L.tgz       OM_1deg.tgz       OM4_360x320_C180.tgz
+AM2_LM3_MOM6i_1deg.tgz    CM2G63L.tgz  GOLD_SIS_025.tgz  MOM6_SIS_icebergs      OM4_025           reanalysis
+AM2_LM3_MOM6i_1deg.tgz.1  CORE         GOLD_SIS.tgz      MOM6_SIS_icebergs.tgz  OM4_025.tgz       reanalysis-sample.tgz
+Baltic_OM4_025            CORE.tgz     hashed-files      obs                    OM4_025.tgz.old   reanalysis.tgz
+Baltic_OM4_025.tgz        global       MESO_025_23L      obs.tgz                OM4_05            src
+Baltic_OM4_05             global.tgz   MESO_025_23L.tgz  obs.woa13.tgz          OM4_05.tgz        src_AM2_LM3_SIS1.tgz
+Baltic_OM4_05.tgz         GOLD_SIS     MESO_025_63L      OM_1deg                OM4_360x320_C180
+
+## unpacking each of the tar files
+$ tar xzf OM4_05.tgz  # like this
+
+### At this point, we now have to establish a symbolic link my storage location for the datasets.
+$ cd /gscratch/bumblereem/viveklp/MOM6-examples
+
+$ mkdir .datasets
+# DON'T FORGET THE PERIOD...
+$ ln -s /gscratch/bumblereem/viveklp/datasets .datasets
+
+# Check our work
+$ cd //gscratch/bumblereem/viveklp/MOM6-examples/ice_ocean_SIS2/OM4_05/INPUT
+$ ncdump -h ocean_hgrid.nc
+
+!!!! ===========================================================
+
+### To run the test_case in ocean-sis2 coupled mode
+##  Test the executable:
+
+$ cd ../../ice_ocean_SIS2/OM4_05
+$ mkdir RESTART
+
+## Run double_gyre test_case
+
+$ ../../build/ice_ocean_SIS2/MOM6
+
+*** Note: For running test_case more than 10 days,, better to written an appropriate run script, you can now submit the job. See the HYAK wiki for full details of using the queues.
+
+
+
+
+
+
+
