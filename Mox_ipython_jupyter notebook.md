@@ -34,4 +34,8 @@ ssh -N -f -L 127.0.0.1:8899:127.0.0.1:8899 n1234
 
 http://127.0.0.1:8899
 
-I recommend referencing the [WIKI for hyak users](https://wiki.cac.washington.edu/display/hyakusers/Mox_ipython_jupyter)  
+## ERROR; the port is already used!
+
+Then use the port number as different like ```8877 8822 8855 etc.... ```
+
+*I recommend referencing the [WIKI for hyak users](https://wiki.cac.washington.edu/display/hyakusers/Mox_ipython_jupyter)*
