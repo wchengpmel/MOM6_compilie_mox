@@ -9,6 +9,12 @@ Here example: ```xyz=jisao``` and ```abc=vivek```
 [vivek@mox1 ~]$ srun -p jisao --time=2:00:00 --mem=100G --pty /bin/bash
 ```
 
+For Getting more interactive nodes
+
+```
+srun --nodes 6 --ntasks-per-node 28 -p jisao -A jisao  --time=7:00:00 --mem=100G --pty /bin/bash
+```
+
 (Suppose the node hostname is n1234 and so the node number is 1234.)
 ```
 jupyter notebook --no-browser --port=8899
