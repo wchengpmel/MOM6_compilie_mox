@@ -50,6 +50,11 @@ module load intel-oneapi-compilers/2022.2.1
 module load openmpi/4.1.4
 ```
 
+The below one needs to be added to the transcript and .bashrc
+```
+export LD_LIBRARY_PATH=/opt/slurm/lib/slurm:$LD_LIBRARY_PATH
+```
+
 ## Compiling the FMS shared code at Herculus Compile system
 ```
 mkdir -p build/fms/
