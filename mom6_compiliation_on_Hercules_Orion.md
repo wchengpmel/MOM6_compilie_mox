@@ -1,10 +1,10 @@
 ## How to login Hercules HPC
 ```
-ssh -Y viveks@hercules-login.hpc.msstate.edu
+ssh -XY viveks@hercules-login.hpc.msstate.edu
 ```
 ## How to login Orion HPC
 ```
-ssh -Y viveks@orion-login.hpc.msstate.edu
+ssh -XY viveks@orion-login.hpc.msstate.edu
 ```
 
 ## Downloading the source code of MOM6
@@ -18,7 +18,7 @@ The above will clone (download) the MOM6-examples repository and all its sub-mod
 From here on, all commands will take place within the `MOM6-examples/` directory you just created.
 
 ### Comment
-By way of explanation, the above one line "recursive clone" is equivalent to the follow steps:
+By way of explanation, the above one-line "recursive clone" is equivalent to the following steps:
 ```
 git clone https://github.com/NOAA-GFDL/MOM6-examples.git MOM6-examples
 cd MOM6-examples
@@ -45,7 +45,7 @@ module use /work/noaa/fv3-cam/jabeles/share/modulefiles
 module load  ufs_hercules.intel
 ```
 ### Setting up the compile environment on Orion
-The following modules need to load before compiling MOM6 on Hercules
+The following modules need to load before compiling MOM6 on Orion
 ```
 module load contrib/0.1
 module load noaatools/3.1
@@ -55,7 +55,9 @@ module load  ufs_orion.intel
 ```
 On both Hercules and Orion systems, MOM6 compiliation is same.
 
-This one can be used on Hercules on `.bashrc` or `sbatch` script to export srun path `export LD_LIBRARY_PATH=/opt/slurm/lib/slurm:$LD_LIBRARY_PATH`
+This one can be used on Hercules on `.bashrc` or `sbatch` script to export srun path.
+
+`export LD_LIBRARY_PATH=/opt/slurm/lib/slurm:$LD_LIBRARY_PATH`
 
 ### Compiling the FMS shared code
 It is best to compile the shared code separately from the model code (proves quicker when building multiple versions of the model).
@@ -67,7 +69,7 @@ mkdir -p build/fms/
 ../../src/mkmf/bin/list_paths -l ../../src/FMS; \
 ../../src/mkmf/bin/mkmf -t ../../src/mkmf/templates/ncrc5-intel-main.mk -p libfms.a -c "-Duse_libMPI -Duse_netCDF" path_names)
 ```
-On Hercules platform, used ncrc5-intel-main.mk template file, And need to change below mentioned lines
+On Hercules and Orion platform, used ncrc5-intel-main.mk template file, And need to change below mentioned lines
 ```
 < ISA_OPT = -march=core-avx4     #add it
 ---  Remove below lines
