@@ -2,6 +2,10 @@
 ```
 ssh -Y viveks@hercules-login.hpc.msstate.edu
 ```
+## How to login Orion HPC
+```
+ssh -Y viveks@orion-login.hpc.msstate.edu
+```
 
 ## Downloading the source code of MOM6
 ```
@@ -31,14 +35,27 @@ The phases of compilation are:
 
 We typically apply above steps either component-by-component (the usual method within FRE scripts) or, in these pages, applied to FMS and then everything else.
 
-### Setting up the compile environment of Hercules
+### Setting up the compile environment on Hercules
 The following modules need to load before compiling MOM6 on Hercules
-
 ```
-module load contrib noaatools/3.1 rocoto
+module load contrib/0.1
+module load noaatools/3.1
+module load rocoto
 module use /work/noaa/fv3-cam/jabeles/share/modulefiles
 module load  ufs_hercules.intel
 ```
+### Setting up the compile environment on Orion
+The following modules need to load before compiling MOM6 on Hercules
+```
+module load contrib/0.1
+module load noaatools/3.1
+module load rocoto
+module use /work/noaa/fv3-cam/jabeles/share/modulefiles
+module load  ufs_orion.intel
+```
+On both Hercules and Orion systems, MOM6 compiliation is same.
+
+This one can be used on Hercules on `.bashrc` or `sbatch` script to export srun path `export LD_LIBRARY_PATH=/opt/slurm/lib/slurm:$LD_LIBRARY_PATH`
 
 ### Compiling the FMS shared code
 It is best to compile the shared code separately from the model code (proves quicker when building multiple versions of the model).
