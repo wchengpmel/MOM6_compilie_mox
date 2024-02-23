@@ -19,6 +19,33 @@ srun --nodes 1 --ntasks-per-node 1 --time=00:10:00  --pty /bin/bash
 ```
 curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
 ```
+```
+bash Anaconda3-2023.09-0-Linux-x86_64.sh
+```
+### Install xesmf 
+xESMF requires Python>=3.8. The major dependencies are xarray and ESMPy, and the best way to install them is using Conda.
+```
+conda create -n xesmf_env
+conda activate xesmf_env
+```
+Getting xESMF is as simple as:
+```
+conda install -c conda-forge xesmf
+```
+We also highly recommend those extra packages for full functionality:
+```
+# to support all features in xESMF
+conda install -c conda-forge dask netCDF4
+
+# optional dependencies for executing all notebook examples
+conda install -c conda-forge matplotlib cartopy jupyterlab
+```
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 ```
 mkdir -p build/fms/
