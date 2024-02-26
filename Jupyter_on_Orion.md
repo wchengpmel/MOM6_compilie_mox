@@ -63,6 +63,14 @@ Install Anaconda on Orion specific to your account.
    ```
    python -m ipykernel install --user --name=xesmf_env
    ```
+
+
+
+## Note:
+Jupyter code convert to py
+
+```jupyter nbconvert --to script read_all_data_regrid-salt.ipynb```
+
    
 
 
