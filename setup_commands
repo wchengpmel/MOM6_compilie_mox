@@ -1,0 +1,48 @@
+# Make sure this directory lives inside the same one you want to put your MOM6 configuration
+# Put MOM6 file is one directory higher
+
+cd ..
+git clone --recursive https://github.com/NOAA-GFDL/MOM6-examples.git
+cd MOM6-examples/src 
+
+mv MOM6 MOM6-GFDL
+git clone https://github.com/ESMG/MOM6.git
+cd MOM6
+git submodule init
+git submodule update
+
+cd ../../..
+
+# Copy over gaea compile script
+
+cp ../Andrew.C.Ross/git/my_mom6/compile_gaea.bash .
+
+# Update the directory paths within the compile script to 'point' to 'MOM6_examples'
+
+./compile_gaea.bash
+
+####### INPUT FILES FOR CCS
+
+# Andrew.C.Ross files
+/work/Andrew.C.Ross/mom6
+
+# Andrew's JRA files
+/work/Andrew.C.Ross/jra
+
+# Andrew's SODA files
+/work/Andrew.C.Ross/soda/3.12.2
+
+# Creating mom6 directory in my work directory and link to his soda and jra files
+
+# INITIAL and OPEN BOUNDARY CONDITIONS
+# Use PyCNAL_regridding: https://github.com/ESMG/PyCNAL_regridding
+# PyCNAL_regridding/example/SODA3.3.1/Creating_Initial_and_Boundary_conditions_from_SODA3.py
+
+# modify file for given SODA and python environment versions
+
+#
+# MOSAIC FILES
+# use https://github.com/ESMG/ESMG-configs.git
+# ESMG-configs/CCS1/preprocessing/
+# using the ROMS grid CCS_7k_0-360_fred_grd.nc: ./make_grid
+

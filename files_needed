@@ -1,0 +1,71 @@
+# Files needed for MOM6 Regional and brief description #
+
+data_table:		Indicates location for forcing conditions (i.e., atmos., land, ice).
+			Include the "MODULE", "variable", "variable", "location", "interpolation", weight(?)
+
+data_table.tembplate	Used with Andrew.C.Ross' job resubmission script to update the year for a 
+			given forcing file listed in the dataset
+
+diag_table		Defines reference time, output frequency
+
+diag_table.OM4 		Not really sure what this does - something about info to CORE forcing?
+
+diag_table.SIS		Specifies Ice output stuff? 
+
+field_table		Unclear - something about clouds and atmosphere?
+
+INPUT (folder)		content details below	
+
+input.nml		indicates run information (e.g., duration)
+
+input_nml.template	Used with Andrew.C.Ross' job resubmission script to update RESTART fields
+
+loop_job.sh		Andrew.C.Ross' job resubmission script
+
+MOM_input		MOM6 parameterizations 
+
+MOM_layout		Processor number and configuration
+
+MOM_override		processes to supercede defaults?
+
+SIS_input		Sea Ice parameterizations
+
+SIS_layout		Sea Ice Processor number and configuration
+	
+SIS_override		Sea Ice processes to supercede defaults
+
+#################################################################
+INPUT (folder) - DOMAIN SPECIFIC
+
+atmos_mosaic_tile1Xland_mosaic_tile1.nc 	coupler map between atmosphere and land (?)
+
+atmos_mosaic_tile1Xocean_mosaic_tile1.nc	coupler map between atmosphere and ocean (?)
+
+grid_spec.nc					grid file information
+
+land_mask.nc					IS_LAND field
+
+land_mosaic_tile1Xocean_mosaic_tile1.nc		coupler map between land and ocean (?)
+
+?mask_table.59.18x20				Mask Table for specific processor config
+
+?MOM_mask_table					processors that can be ommited if all are land
+
+mosaic.nc					similar to grid_spec.nc
+
+ocean_hgrid.nc					lat,lon,dx,dy
+
+ocean_mask.nc					IS_OCEAN field
+
+ocean_mosaic.nc					similar to mosaic but for the ocean (?)
+
+ocean_topog.nc					bathymetry
+
+topog.nc					bathymetry and IS_WET field
+
+vgrid_50.nc					dz field; specified in MOM_input for ALE_COORDINATE_CONFIG
+
+
+
+
+		
